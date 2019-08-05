@@ -17,8 +17,11 @@ module Refinery
 
       config.to_prepare do
         ::ApplicationController.module_eval do
+          def locale_param
+            (::I18n.locale != ::Refinery::I18n.default_frontend_locale) ? { locale: ::I18n.locale } : { locale: nil }
+          end
+
           def default_url_options
-            locale_param=(::I18n.locale != ::Refinery::I18n.default_frontend_locale) ? { :locale => ::I18n.locale } : {locale: nil}
             super.reverse_merge locale_param
           end
 
@@ -28,8 +31,9 @@ module Refinery
             if ::Refinery::I18n.has_locale?(locale = params[:locale].try(:to_sym))
               ::I18n.locale = locale
             elsif locale.present? && locale != ::Refinery::I18n.default_frontend_locale
-              params[:locale] = ::I18n.locale.to_s = ::Refinery::I18n.default_frontend_locale.to_s
-              redirect_to(params, :notice => "The locale '#{locale}' is not supported.") and return
+              ::I18n.locale = ::Refinery::I18n.default_frontend_locale
+              redirect_to(params.permit(:locale).merge(locale_param),
+                          notice: "The locale '#{locale}' is not supported.") and return
             else
               ::I18n.locale = ::Refinery::I18n.default_frontend_locale
             end
