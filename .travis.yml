@@ -1,4 +1,6 @@
 language: ruby
+dist: trusty
+sudo: false
 cache: bundler
 bundler_args: --without development
 before_script: "bin/rake refinery:testing:dummy_app"
@@ -9,7 +11,6 @@ notifications:
   webhooks:
     - https://webhooks.gitter.im/e/b5d48907cdc89864b874
 rvm:
-  - 2.4.1
-  - 2.3.3
-  - 2.2.6
-sudo: false
+  - 2.6.4
+  - 2.5.6
+  - 2.4.7
